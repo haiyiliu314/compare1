@@ -66,7 +66,8 @@
                                                  J_THZ_t = 0.0d0                 
   !pt: macroscopic polarization as a function of time ft: macroscopic density as a function of time
   complex*16                                   ::p_freq(N_freq) = 0.0d0, E_freq(N_freq) = 0.0d0,&
-                                                 A_freq(N_freq) = 0.0d0, J_THZ_freq(N_freq) = 0.0d0   
+                                                 A_freq(N_freq) = 0.0d0, J_THZ_freq(N_freq) = 0.0d0, &
+                                                 p1_freq(N_freq) = 0.0d0   
   !p_freq: Fourier transform of polarization   E_freq: Fourier transform of electrical field
   double precision                             ::freqgrid(N_freq) = 0.0d0, test(Nphi) = 0.0d0     
   !freqgrid: frequency grid used for Fourier transform   test: irrelevant with code

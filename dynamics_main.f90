@@ -69,8 +69,8 @@ program main
       write(703, format_V2) abs(pt)
       write(704, format_V2) abs(ft)
     end if
-    call RK(E_freq, p_freq, f, p, dble(Ndo), A_freq, J_THZ_freq, &              !input
-            E_freq, p_freq, f, p, A_freq, J_THZ_freq)                           !output
+    call RK(E_freq, p_freq, p1_freq, f, p, dble(Ndo), A_freq, J_THZ_freq, &              !input
+            E_freq, p_freq, p1_freq, f, p, A_freq, J_THZ_freq)                           !output
     if(Ndo == i2*Nt/Nt_RWA) then
 
       write(702, format_V1) real(Etime(dble(Ndo)))
@@ -119,6 +119,14 @@ program main
   write(format_V, '(A12, I6, A18)')   '(SE24.16e3, ', N_freq, '(", ",SE24.16e3))'
   do i1 = 1, N_freq
     write(700, format_V) p_freq(i1)
+  end do
+  close(700)
+
+  write(list_file, '(A)') 'p1_freq.dat'           !p_freq
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I6, A18)')   '(SE24.16e3, ', N_freq, '(", ",SE24.16e3))'
+  do i1 = 1, N_freq
+    write(700, format_V) p1_freq(i1)
   end do
   close(700)
 
