@@ -154,6 +154,6 @@
     pt1 = dy*sum(y*p_via(Nm_o+1, :)*dipole)/(2.0d0*pi)/5d-10   !calculate macroscopic polarization
     kPfreq_out = dt * pt1 * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
     kJ_out = dt * J_THZ_t1 * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
-    kP1freq_out = dt * (dy*sum(y*y*(p_via(Nm_o, :)+p_via(Nm_o+2, :)))/(2.0d0*pi)) * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
+    kP1freq_out = dt * (dy*sum(y*y*y*(p_via(Nm_o, :)+p_via(Nm_o+2, :)))/(2.0d0*pi)) * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
   end subroutine RHS
   end module RK_help
