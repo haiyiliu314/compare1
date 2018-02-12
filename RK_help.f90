@@ -22,7 +22,7 @@
 !    freqgrid(i1) =1d0+0.01d0*i1-0.005d0
   end do
 !-----------output the frequency grid---------------
-  freqgrid = (1d0*Eg+freqgrid*0.2d0*Eg)/hbar
+  freqgrid = (1d0*Eg+freqgrid*0.04d0*Eg)/hbar
 !  freqgrid = (3d0*Eg+freqgrid*6d0*Eg)/hbar
 !  freqgrid = (freqgrid*Ebind)/hbar
   write(list_file, '(A)') 'freqgrid.dat'           !p(t)
@@ -62,7 +62,7 @@
 
 
   subroutine RHS(nt_via, f_via, p_via, &
-                 p_out, f_out, kE_out, kPfreq_out, kA_out, kJ_out)
+                 p_out, f_out, kE_out, kPfreq_out, kP1freq_out, kA_out, kJ_out)
   !08/25/2017 creation
   !calculate the right hand side of RK
     double precision, intent(in)                           ::nt_via   
@@ -77,6 +77,7 @@
     !density output
     complex*16, intent(out)                                ::kE_out(N_freq)
     complex*16, intent(out)                                ::kPfreq_out(N_freq)
+    complex*16, intent(out)                                ::kP1freq_out(N_freq)
     complex*16, intent(out)                                ::kA_out(N_freq)
     complex*16, intent(out)                                ::kJ_out(N_freq)
     !kE_out, kPfreq_out, kA_out, kJ_out: output parameters for Runge-Kutta methods
@@ -147,11 +148,12 @@
                         /hbar*dt/(0.0d0, 1.0d0)*Ebind
     end do
     J_THZ_t1 = 0d0
-    J_THZ_t1 = dy*sum(y*y*(p_via(Nm_o, :)+p_via(Nm_o+2, :)))/(2.0d0*pi)
+    J_THZ_t1 = dy*sum(y*y*(f_via(Nm_o, :)+f_via(Nm_o+2, :)))/(2.0d0*pi)
     kE_out = dt * Etime(nt_via) * exp((0.0d0, 1.0d0)*(dt*nt_via+tstart_A)*freqgrid)  
     kA_out = dt * Atime(nt_via) * exp((0.0d0, 1.0d0)*(dt*nt_via+tstart_A)*freqgrid) 
     pt1 = dy*sum(y*p_via(Nm_o+1, :)*dipole)/(2.0d0*pi)/5d-10   !calculate macroscopic polarization
     kPfreq_out = dt * pt1 * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
     kJ_out = dt * J_THZ_t1 * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
+    kP1freq_out = dt * (dy*sum(y*y*(p_via(Nm_o, :)+p_via(Nm_o+2, :)))/(2.0d0*pi)) * exp((0.0d0, 1.0d0)*freqgrid*(tstart_A+dt*(nt_via)))
   end subroutine RHS
   end module RK_help
