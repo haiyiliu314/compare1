@@ -10,7 +10,7 @@
 !  !m: order of circular harmonics
   double precision, parameter                  ::ymax = 35.0d0, dy = ymax/dble(Ny) 
   !ymax: maximum value for y   dy: length of one step for y grid
-  double precision, parameter                  ::sigmat = 0.3d0, tstart = -1d0,&
+  double precision, parameter                  ::sigmat = 0.3d0, tstart = -3d0,&
                                                  sigmat_A = 0.2d0, tstart_A = -1d0  
 !                                                 sigmat_A = 0.2d0*scale1, tstart_A = -0.5d0*scale1  
   !sigmat: sigma for gaussian pulse(E(t) = exp(-t^2/sigmat^2))(ps)   tstart: starting point for
@@ -66,7 +66,8 @@
                                                  J_THZ_t = 0.0d0                 
   !pt: macroscopic polarization as a function of time ft: macroscopic density as a function of time
   complex*16                                   ::p_freq(N_freq) = 0.0d0, E_freq(N_freq) = 0.0d0,&
-                                                 A_freq(N_freq) = 0.0d0, J_THZ_freq(N_freq) = 0.0d0   
+                                                 A_freq(N_freq) = 0.0d0, J_THZ_freq(N_freq) = 0.0d0, &
+                                                 p1_freq(N_freq) = 0.0d0   
   !p_freq: Fourier transform of polarization   E_freq: Fourier transform of electrical field
   double precision                             ::freqgrid(N_freq) = 0.0d0, test(Nphi) = 0.0d0     
   !freqgrid: frequency grid used for Fourier transform   test: irrelevant with code
