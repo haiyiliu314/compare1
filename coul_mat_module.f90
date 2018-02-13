@@ -51,7 +51,7 @@ module coul_mat_module
     end do
     coul_mat = coul_mat/pi*dy   
     !multiply with constants that missed in the do loop
-    coul_mat = 0d0
+!    coul_mat = 0d0
   end subroutine coul_matrix
 
 end module coul_mat_module
