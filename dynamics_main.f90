@@ -31,7 +31,112 @@ program main
 !  do i4 = 10:10
 !  A_excit = (1+dble(i4)*0.1)*1d5*(Eg/3d0/hbar)/A_freq_para
 
+!-------------------eigen vectors --------------------
+  A = -1d0*TRANSPOSE(coul_mat(1, :, :))
+  do i2 = 1, Ny
+    A(i2, i2) = A(i2, i2) + y(i2)*y(i2)
+  end do 
+  LWORK = -1
+  CALL ZGEEV(NO, YES, Ny, A, LDA, W, VL, LDVL,&
+             VR, LDVR, WORK, LWORK, RWORK, INFO )
+  LWORK = min( LWMAX, int( WORK( 1 ) ) )
+  CALL ZGEEV(NO, YES, Ny, A, LDA, W, VL, LDVL,&
+             VR, LDVR, WORK, LWORK, RWORK, INFO )
 
+  A1 = -1d0*TRANSPOSE(coul_mat(2, :, :))
+  LWORK = -1
+  do i2 = 1, Ny
+    A1(i2, i2) = A1(i2, i2) + y(i2)*y(i2)
+  end do 
+  CALL ZGEEV(NO, YES, Ny, A1, LDA, W1, VL1, LDVL,&
+             VR1, LDVR, WORK, LWORK, RWORK, INFO )
+  LWORK = min( LWMAX, int( WORK( 1 ) ) )
+  CALL ZGEEV(NO, YES, Ny, A1, LDA, W1, VL1, LDVL,&
+             VR1, LDVR, WORK, LWORK, RWORK, INFO )
+
+  A2 = -1d0*TRANSPOSE(coul_mat(3, :, :))
+  LWORK = -1
+  do i2 = 1, Ny
+    A2(i2, i2) = A2(i2, i2) + y(i2)*y(i2)
+  end do 
+  CALL ZGEEV(NO, YES, Ny, A2, LDA, W2, VL2, LDVL,&
+             VR2, LDVR, WORK, LWORK, RWORK, INFO )
+  LWORK = min( LWMAX, int( WORK( 1 ) ) )
+  CALL ZGEEV(NO, YES, Ny, A2, LDA, W2, VL2, LDVL,&
+             VR2, LDVR, WORK, LWORK, RWORK, INFO )
+!---------------end eigen vectors -------------------- 
+
+!---------------sorting-------------------------------
+  Etemp = real(W)
+  Emax = maxval(Etemp)
+  do Ndo = 1, Ny
+    i2 = minloc(Etemp, 1)
+    Etemp1(Ndo) = minval(Etemp, 1)
+    VR_temp(:,Ndo) = VR(:,i2)
+    Etemp(i2) = Emax+1d0
+  end do
+  W = Etemp1
+  VR = VR_temp
+
+  Etemp = real(W1)
+  Emax = maxval(Etemp)
+  do Ndo = 1, Ny
+    i2 = minloc(Etemp, 1)
+    Etemp1(Ndo) = minval(Etemp, 1)
+    VR_temp(:,Ndo) = VR1(:,i2)
+    Etemp(i2) = Emax+1d0
+  end do
+  W1 = Etemp1
+  VR1 = VR_temp
+
+  Etemp = real(W2)
+  Emax = maxval(Etemp)
+  do Ndo = 1, Ny
+    i2 = minloc(Etemp, 1)
+    Etemp1(Ndo) = minval(Etemp, 1)
+    VR_temp(:,Ndo) = VR2(:,i2)
+    Etemp(i2) = Emax+1d0
+  end do
+  W2 = Etemp1
+  VR2 = VR_temp
+
+  write(list_file, '(A)') 'eigenvectors_R.dat'       !eigen vectors
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+    do i2 = 1, Ny
+      write(700, format_V) real(VR(:,i2))
+    end do
+  close(700)
+
+  write(list_file, '(A)') 'eigenvectors_m1_R.dat'       !eigen vectors
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+    do i2 = 1, Ny
+      write(700, format_V) real(VR1(:,i2))
+    end do
+  close(700)
+
+  write(list_file, '(A)') 'eigenvectors_m2_R.dat'       !eigen vectors
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+    do i2 = 1, Ny
+      write(700, format_V) real(VR2(:,i2))
+    end do
+  close(700)
+!-----------end sorting-------------------------------
+!---------------Normalization-------------------------
+  do Ndo = 1, Ny
+    VL(:, Ndo) = VL(:, Ndo)/sqrt(real(sum(y*VL(:, Ndo)*conjg(VL(:, Ndo))))*dy/2d0/pi)
+    VL1(:, Ndo) = VL1(:, Ndo)/sqrt(real(sum(y*VL1(:, Ndo)*conjg(VL1(:, Ndo))))*dy/2d0/pi)
+  end do
+  do Ndo = 1, Ny
+    VR(:, Ndo) = VR(:, Ndo)/sqrt(real(sum(y*VR(:, Ndo)*conjg(VR(:, Ndo))))*dy/2d0/pi)
+    VR1(:, Ndo) = VR1(:, Ndo)/sqrt(real(sum(y*VR1(:, Ndo)*conjg(VR1(:, Ndo))))*dy/2d0/pi)
+  end do
+
+  VL1 = VR1
+  VL =VR
+  VL2 =VR2
 
 
   write(list_file, '(A)') 'pk2.dat'           !pk
@@ -43,6 +148,8 @@ program main
   open(unit=702,file=list_file2)
   write(list_file, '(A)') 'pt.dat'           !p(t)
   open(unit=703,file=list_file)
+  write(list_file, '(A)') 'p1t.dat'           !p(t)
+  open(unit=711,file=list_file)
   write(list_file, '(A)') 'p_i.dat'           !p(t)
   open(unit=710,file=list_file)
   write(list_file, '(A)') 'ft.dat'           !f(t)
@@ -68,19 +175,19 @@ program main
     if(Ndo == i2*Nt/Nt_RWA) then
       write(703, format_V2) abs(pt)
       write(704, format_V2) abs(ft)
+      write(711, format_V3) abs(dy*sum(y*y*(p(Nm_o, :)+ p(Nm_o+2, :)))/(4.0d0*pi))
     end if
-    call RK(E_freq, p_freq, f, p, dble(Ndo), A_freq, J_THZ_freq, &              !input
-            E_freq, p_freq, f, p, A_freq, J_THZ_freq)                           !output
+    call RK(E_freq, p_freq, p1_freq, f, p, dble(Ndo), A_freq, J_THZ_freq, &              !input
+            E_freq, p_freq, p1_freq, f, p, A_freq, J_THZ_freq)                           !output
     if(Ndo == i2*Nt/Nt_RWA) then
-
+     
       write(702, format_V1) real(Etime(dble(Ndo)))
       write(705, format_V3) real(Atime(dble(Ndo))), aimag(Atime(dble(Ndo)))
       write(706, format_V3) real(J_THZ_t), aimag(J_THZ_t)
-      p_proj(i2, :) = matmul(p(Nm_o+1, :)*y, VL)*dy/2d0/pi
+      do i4 = 1, Ny
+        VL1(:, i4) = VR1(:, i4)/(1d0 - 2d0*f(Nm_o+2,:))
+      end do
       p_proj1(i2, :) = matmul(p(Nm_o+2, :)*y, VL1)*dy/2d0/pi
-      p_proj11(i2, :) = matmul(p(Nm_o, :)*y, VL1)*dy/2d0/pi
-      p_proj2(i2, :) = matmul(p(Nm_o+3, :)*y, VL2)*dy/2d0/pi
-      p_proj22(i2, :) = matmul(p(Nm_o-1, :)*y, VL2)*dy/2d0/pi
       i2 = i2+1
     end if
     if(Ndo == i3*Nt/Nt_RWA) then
@@ -103,6 +210,7 @@ program main
   close(706)
   close(707)
   close(708)
+  close(711)
 !  end do
 !-------------------output--------------------
   write(list_file, '(A)') 'coulomb.dat'       !coul_mat
@@ -122,6 +230,14 @@ program main
   end do
   close(700)
 
+  write(list_file, '(A)') 'p1_freq.dat'           !p_freq
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I6, A18)')   '(SE24.16e3, ', N_freq, '(", ",SE24.16e3))'
+  do i1 = 1, N_freq
+    write(700, format_V) p1_freq(i1)
+  end do
+  close(700)
+    
   write(list_file, '(A)') 'E_freq.dat'           !E_freq
   open(unit=700,file=list_file)
   write(format_V, '(A12, I6, A18)')   '(SE24.16e3, ', N_freq, '(", ",SE24.16e3))'
@@ -177,7 +293,55 @@ program main
     write(700, *) N_freq
     write(700, *) delta_1s
   close(700)
+  write(list_file, '(A)') 'p_proj.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+  do i1 = 1, Nt_RWA
+      write(700, format_V) real(p_proj(i1,:))
+      write(700, format_V) aimag(p_proj(i1,:))
+  end do
+  close(700)
 
+  write(list_file, '(A)') 'p_proj1.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+  do i1 = 1, Nt_RWA
+      write(700, format_V) real(p_proj1(i1,:))
+      write(700, format_V) aimag(p_proj1(i1,:))
+  end do
+  close(700)
+
+  write(list_file, '(A)') 'p_proj11.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+  do i1 = 1, Nt_RWA
+      write(700, format_V) real(p_proj11(i1,:))
+      write(700, format_V) aimag(p_proj11(i1,:))
+  end do
+  close(700)
+
+  write(list_file, '(A)') 'p_proj2.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+  do i1 = 1, Nt_RWA
+      write(700, format_V) real(p_proj2(i1,:))
+      write(700, format_V) aimag(p_proj2(i1,:))
+  end do
+  close(700)
+
+  write(list_file, '(A)') 'p_proj22.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+  do i1 = 1, Nt_RWA
+      write(700, format_V) real(p_proj22(i1,:))
+      write(700, format_V) aimag(p_proj22(i1,:))
+  end do
+  close(700)
+  write(list_file, '(A)') 'eigenvalues_p.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+      write(700, format_V) real(W1)
+  close(700)
 !----------------end output------------------
   call output_params
 end program main
