@@ -22,7 +22,7 @@
   double precision, parameter                  ::Ebind = 4.18d0, gamma = 1.56d0, Eg = 1.50d3
   !Ebind: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   double precision, parameter                  ::omega_1s = (0d0)/hbar, &    
-                                                 A_freq_para = (Eg-4d0*Ebind+2d0*Ebind+12d0*Ebind*(6d0/50d0 - 0.5d0))/2d0/hbar
+                                                 A_freq_para = (Eg-4d0*Ebind+0.8*Ebind)/2d0/hbar
 !                                                 A_freq_para = (4d0-4d0/9d0)*Ebind/hbar
 !                                                 A_freq_para = omega_1s
 !                                                dipole: unit: m*e(elementary charge)
