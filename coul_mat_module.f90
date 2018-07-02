@@ -31,7 +31,7 @@ module coul_mat_module
     b = pi / ( dble(Nphi) + 1.0d0 ) * b_mid3
     w11 = pi / ( dble(Nphi) + 1.0d0 ) * ( 1.0d0 - dcos( 2.0d0 * pi * a / ( dble(Nphi) + 1.0d0))) 
     !b&w11: Gauss-Chebyshev grid
-    do Ndo_m = 1, Nm_o+1
+    do Ndo_m = 1, (Nm_o+1)
       do Ndo = 1, Ny
         y_fine = y(Ndo) - dy/2.0d0 + fine_grid   
         !calculate the finer grid for diagonal terms

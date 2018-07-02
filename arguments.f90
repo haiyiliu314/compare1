@@ -35,11 +35,9 @@
   integer                                      ::INFO, LWORK
   double precision                             ::RWORK(2*Ny)
   complex*16                                   ::A( LDA, Ny ), VL( LDVL, Ny ), VR( LDVR, Ny ),&
-                                                 W( Ny ), WORK( LWMAX ), VL1( LDVL, Ny ), &
-                                                 VR1( LDVR, Ny ), W1( Ny ), A1( LDA, Ny ), &
+                                                 W( Ny ), WORK( LWMAX ), &
                                                  VR_temp(LDVR, Ny), VL_temp(LDVL, Ny), &
-                                                 VL2( LDVL, Ny ), VR2( LDVR, Ny ), &
-                                                 W2( Ny ), A2( LDA, Ny )
+                                                 W_coul(Ny, Nm_o+1), VR_coul(Nm_o+1, Ny, Ny)
   character                                    ::YES = 'V',NO = 'N'
 !-------------------end LAPACK-----------------------
   double precision                             ::E_excit = 1.0d-3, shift = (Eg - omega_1s*hbar)/Ebind,A_excit = 1d5*(Eg/3d0/hbar)/A_freq_para
