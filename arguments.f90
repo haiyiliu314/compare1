@@ -8,7 +8,7 @@
   !t_end: whole time
 !  integer                                      ::m(2*Nm_o+1) = 0
 !  !m: order of circular harmonics
-  double precision, parameter                  ::ymax = 10.0d0, dy = ymax/dble(Ny) 
+  double precision, parameter                  ::ymax = 35.0d0, dy = ymax/dble(Ny) 
   !ymax: maximum value for y   dy: length of one step for y grid
   double precision, parameter                  ::sigmat = 0.3d0, tstart = -3d0,&
                                                  sigmat_A = 0.2d0, tstart_A = -1d0  
@@ -19,7 +19,7 @@
   !physical parameters
   double precision, parameter                  ::hbar = 0.6582119514d0, e = 1.60217662d-19  
   !physical parameters  unit of hbar: meV * ps
-  double precision, parameter                  ::Ebind = 4.18d0, gamma = 1.56d0, Eg = 1.50d3, decay_m =1d0
+  double precision, parameter                  ::Ebind = 4.18d0, gamma = 1.56d0, Eg = 1.50d3, decay_m = Eg/2d0
   !Ebind: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   double precision, parameter                  ::omega_1s = (0d0)/hbar, &    
                                                  !A_freq_para = (Eg-4d0*Ebind+2d0*Ebind+12d0*Ebind*(20d0/50d0 - 0.5d0))/2d0/hbar

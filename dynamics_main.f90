@@ -200,8 +200,10 @@ program main
         write(708, format_V) aimag(decay(i1, :))
       end do
       i3 = i3+1
+    write(*,*) i3
     end if
   end do
+  write(*,*) i2
   close(700)
   close(701)
   close(704)
@@ -279,7 +281,7 @@ program main
       write(700, format_V) dipole
   close(700)
 
-
+  write(*,*) Ny
   write(list_file, '(A)') 'para_mat.dat'       !eigen values
   open(unit=700,file=list_file)
   write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', 1, '(", ",SE24.16e3))'  
