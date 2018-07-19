@@ -153,16 +153,17 @@
 !                        shift*p_via(Ndo_m, :) -&
 !                        ((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
 !                        (p_sum_part_m - 2.0d0*fp_sum) )- ii*decay_m*decay_via(Ndo_m, :)/Ebind )/hbar*dt*Ebind
-      write(*,*) pf_sum
       p_out(Ndo_m, :) = -ii*((y*y+shift - ii * gamma) * p_via(Ndo_m, :)&
-                         - 2.0d0*pf_sum -&
+                         -&
                         (abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind-(p_sum_part_m - 2.0d0*fp_sum)  )/hbar*dt*Ebind
       f_out(Ndo_m, :) = (conjg(Etime(nt_via)*dipole/Ebind)*p_via(Ndo_m, :) - Etime(nt_via)*dipole/Ebind&
                         *conjg(p_via((2*Nm_o+2)-Ndo_m, :)) &
                         +(pp_sum_plus-pp_sum)- ii *(dble(Ndo_m==Nm_o+1)+1)*gamma &
                         * f_via(Ndo_m, :))&
                         /hbar*dt/ii*Ebind
-
+    if(nt_via == i2*Nt/Nt_RWA) then
+      write(700,format_V1) sum(abs(pf_sum))
+    end if
       f_out = 0d0
 
       decay_sum_part_m = matmul(decay_via(Ndo_m, :), coul_mat(abs(Ndo_m-Nm_o-1)+1, :, :))

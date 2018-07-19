@@ -9,8 +9,8 @@ module coul_mat_module
   !07/03/2017 creation
   !calculate Coulomb matrix(non-symmetric, i.e. already contains the integration term, i.e. 2pi*dy*y*V_{y-y'})
     implicit none
-    double precision                                 ::a(Nphi), b(Nphi), c(Nphi), w1(Nphi)   
-!a:integer series   b&w1: Gauss-Chebyshev grid
+    double precision                                 ::a(Nphi), b(Nphi), c(Nphi), w11(Nphi)   
+!a:integer series   b&w11: Gauss-Chebyshev grid
     integer                                          ::Ndo, Ndo_in, Ndo_m, m = 0   
 !Ndo & Ndo_in:integer number for do loop, m:order of circular harmonics 
     double precision                                 ::fine_grid(N_fine)
@@ -29,22 +29,22 @@ module coul_mat_module
     b_mid2 = dsin ( (2.0d0 * pi * a ) / ( dble(Nphi)+ 1.0d0 ))
     b_mid3 =  ( a - b_mid1 * b_mid2)
     b = pi / ( dble(Nphi) + 1.0d0 ) * b_mid3
-    w1 = pi / ( dble(Nphi) + 1.0d0 ) * ( 1.0d0 - dcos( 2.0d0 * pi * a / ( dble(Nphi) + 1.0d0))) 
-    !b&w1: Gauss-Chebyshev grid
+    w11 = pi / ( dble(Nphi) + 1.0d0 ) * ( 1.0d0 - dcos( 2.0d0 * pi * a / ( dble(Nphi) + 1.0d0))) 
+    !b&w11: Gauss-Chebyshev grid
     do Ndo_m = 1, Nm_o+1
       do Ndo = 1, Ny
         y_fine = y(Ndo) - dy/2.0d0 + fine_grid   
         !calculate the finer grid for diagonal terms
 !------------calculate the Coulomb matrix without removal of singularity-------------
         do Ndo_in = 1, Nphi
-          coul_mat(Ndo_m, :, Ndo)=coul_mat(Ndo_m, :, Ndo)+(1.0d0/(dsqrt(y(Ndo)*y(Ndo)+y*y -2.0d0*y*y(Ndo)*dcos(b(Ndo_in)))))*2.0d0*y*w1(Ndo_in)*dcos(dble(Ndo_m-1)*b(Ndo_in))
+          coul_mat(Ndo_m, :, Ndo)=coul_mat(Ndo_m, :, Ndo)+(1.0d0/(dsqrt(y(Ndo)*y(Ndo)+y*y -2.0d0*y*y(Ndo)*dcos(b(Ndo_in)))))*2.0d0*y*w11(Ndo_in)*dcos(dble(Ndo_m-1)*b(Ndo_in))
         end do
 !-----------end calculation----------------------------------------------------------
         coul_mat(Ndo_m, Ndo, Ndo) = 0.0d0     
        !eliminate the diagonal terms and calculate them as followed
 !-----------calculate the diagonal terms with removal of singularity---------------------
         do Ndo_in = 1, N_fine    
-          coul_mat(Ndo_m, Ndo,Ndo)=coul_mat(Ndo_m, Ndo, Ndo) + sum( 1.0d0/ dsqrt( y(Ndo) *y(Ndo) + y_fine(Ndo_in) *y_fine(Ndo_in) - 2.0d0 * y_fine(Ndo_in) * y(Ndo) * dcos( b ) ) / dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w1* dcos( dble(Ndo_m-1)*b ))
+          coul_mat(Ndo_m, Ndo,Ndo)=coul_mat(Ndo_m, Ndo, Ndo) + sum( 1.0d0/ dsqrt( y(Ndo) *y(Ndo) + y_fine(Ndo_in) *y_fine(Ndo_in) - 2.0d0 * y_fine(Ndo_in) * y(Ndo) * dcos( b ) ) / dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w11* dcos( dble(Ndo_m-1)*b ))
         end do  
 !-----------end calculation-----------------------------------------------------------
       end do
