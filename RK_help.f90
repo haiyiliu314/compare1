@@ -55,9 +55,9 @@
     double precision                             ::t1
     t1 = tvia*dt+tstart_A                     
     !tvia: time step(converted into double precision)
-!    Atime = A_excit*exp(-((tvia)*dt+tstart_A)*((tvia)*dt+tstart_A)/(sigmat_A*sigmat_A))*cos(A_freq_para*t1/hbar)*Ebind*2d0
+    Atime = A_excit*exp(-((tvia)*dt+tstart_A)*((tvia)*dt+tstart_A)/(sigmat_A*sigmat_A))*cos(A_freq_para*t1/hbar)*Ebind*2d0
 !    Atime = A_excit*exp(-((tvia)*dt+tstart_A)*((tvia)*dt+tstart_A)/(sigmat_A*sigmat_A))*(exp(ii*A_freq_para*t1/hbar)+exp(-ii*A_freq_para*t1/hbar))*Ebind        ! unit:meV    
-    Atime = A_excit*exp(-t1*t1/(sigmat_A*sigmat_A))*(cos(A_freq_para*t1))        ! unit:V*ps/m                    
+!    Atime = A_excit*exp(-t1*t1/(sigmat_A*sigmat_A))*(cos(A_freq_para*t1))        ! unit:V*ps/m                    
   end function Atime
 
 
@@ -153,23 +153,26 @@
 !                        shift*p_via(Ndo_m, :) -&
 !                        ((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
 !                        (p_sum_part_m - 2.0d0*fp_sum) )- ii*decay_m*decay_via(Ndo_m, :)/Ebind )/hbar*dt*Ebind
-      p_out(Ndo_m, :) = -ii*((y*y+shift - ii * gamma) * p_via(Ndo_m, :)&
-                         - 2.0d0*pf_sum - 250d0/hbar*1d-7*y*Atime(nt_via)*coup-&
-                        (abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind-(p_sum_part_m - 2.0d0*fp_sum)  )/hbar*dt*Ebind
+      p_out(Ndo_m, :) = -ii*((y*y*0d0+shift*0d0 - ii * gamma) * p_via(Ndo_m, :)&
+                         -&
+                        (abs(dble(Ndo_m == (Nm_o+1)))) *Etime(nt_via)*dipole/Ebind)/hbar*dt*Ebind
       f_out(Ndo_m, :) = (conjg(Etime(nt_via)*dipole/Ebind)*p_via(Ndo_m, :) - Etime(nt_via)*dipole/Ebind&
                         *conjg(p_via((2*Nm_o+2)-Ndo_m, :)) &
                         +(pp_sum_plus-pp_sum)- ii *(dble(Ndo_m==Nm_o+1)+1)*gamma &
                         * f_via(Ndo_m, :))&
                         /hbar*dt/ii*Ebind
     if(nt_via == i2*Nt/Nt_RWA) then
-      write(700,format_V1) nt_via
+      write(700,format_V1) gamma
     end if
       f_out = 0d0
 
-      decay_sum_part_m = matmul(decay_via(Ndo_m, :), coul_mat(abs(Ndo_m-Nm_o-1)+1, :, :))
-      decay_out(Ndo_m, :) = -ii*(y*y*decay_via(Ndo_m, :) - ii*decay_m/Ebind* decay_via(Ndo_m,:) - 2.0d0*decayf_sum + &
-                        shift*decay_via(Ndo_m, :) + ii * gamma * p_via(Ndo_m, :)/Ebind -&
-                        ((decay_sum_part_m-2.0d0*fdecay_sum) ) )/hbar*dt*Ebind
+!      decay_sum_part_m = matmul(decay_via(Ndo_m, :), coul_mat(abs(Ndo_m-Nm_o-1)+1, :, :))
+!      decay_out(Ndo_m, :) = -ii*(y*y*decay_via(Ndo_m, :) - ii*decay_m/Ebind* decay_via(Ndo_m,:) - 2.0d0*decayf_sum + &
+!                        shift*decay_via(Ndo_m, :) + ii * gamma * p_via(Ndo_m, :)/Ebind -&
+!                        ((decay_sum_part_m-2.0d0*fdecay_sum) ) )/hbar*dt*Ebind
+       
+       decay_out = 0d0
+
     end do
     t1 = dt*nt_via+tstart_A
     J_THZ_t1 = 0d0
