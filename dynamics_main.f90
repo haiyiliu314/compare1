@@ -16,7 +16,7 @@ program main
   use RK_module
   use params
   implicit none
-  integer                                                       ::Ndo, Ndo_m, i2, Ndo_in, i3, i4
+  integer                                                       ::Ndo, Ndo_m, Ndo_in, i3, i4
   complex*16                                                    ::osc_str(Ny)
   call constant  
   call coul_matrix
@@ -173,7 +173,7 @@ program main
     end do
     J_THZ_t = dy*sum(y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
     if(Ndo == i2*Nt/Nt_RWA) then
-      write(703, format_V2) abs(pt)
+      write(703, format_V2) real(pt)
       write(704, format_V2) abs(ft)
       write(711, format_V3) abs(dy*sum(y*y*(p(Nm_o, :)+ p(Nm_o+2, :)))/(4.0d0*pi))
     end if
@@ -187,12 +187,12 @@ program main
       p_proj1 = matmul(p(Nm_o+2, :)*y, conjg(VL1))*dy/2d0/pi
       p_proj = matmul(p(Nm_o+1, :)*y, conjg(VL))*dy/2d0/pi
       p_proj2 = matmul(p(Nm_o-1, :)*y, conjg(VL2))*dy/2d0/pi
-      write(800, format_V4) real(p_proj)
-      write(800, format_V4) aimag(p_proj)
-      write(801, format_V4) real(p_proj1)
-      write(801, format_V4) aimag(p_proj1)
-      write(802, format_V4) real(p_proj2)
-      write(802, format_V4) aimag(p_proj2)
+!      write(800, format_V4) real(p_proj)
+!      write(800, format_V4) aimag(p_proj)
+!      write(801, format_V4) real(p_proj1)
+!      write(801, format_V4) aimag(p_proj1)
+!      write(802, format_V4) real(p_proj2)
+!      write(802, format_V4) aimag(p_proj2)
       i2 = i2+1
     end if
     if(Ndo == i3*Nt/Nt_RWA) then
