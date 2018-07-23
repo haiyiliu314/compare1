@@ -46,18 +46,16 @@ module RK_module
     !calculate k2
     call RHS(n+0.50d0, f_in + kf1/2.0d0, p_in + kp1/2.0d0, decay_in + kdecay1/2.0d0, &
              kp2, kf2, kdecay2, kE2, kPfreq2, kP1freq2, kA2, kJ2)
-
     !calculate k3
     call RHS(n+0.50d0, f_in + kf2/2.0d0, p_in + kp2/2.0d0, decay_in + kdecay2/2.0d0, &
              kp3, kf3, kdecay3, kE3, kPfreq3, kP1freq3, kA3, kJ3)
-
     !calculate k4
     call RHS(n+1.0d0, f_in + kf3, p_in + kp3, decay_in + kdecay3, &
              kp4, kf4, kdecay4, kE4, kPfreq4, kP1freq4, kA4, kJ4)
-
     !final step for Runge-Kutta
     p_out = p_in + kp1/6.0d0 +kp2/3.0d0 + kp3/3.0d0 + kp4/6.0d0
     decay_out = decay_in + kdecay1/6.0d0 +kdecay2/3.0d0 + kdecay3/3.0d0 + kdecay4/6.0d0
+!    print*,abs(p_out(Nm_o+1,1))
     f_out = f_in + kf1/6.0d0 +kf2/3.0d0 + kf3/3.0d0 + kf4/6.0d0 
     E_out = E_in + kE1/6.0d0 +kE2/3.0d0 + kE3/3.0d0 + kE4/6.0d0
     A_out = A_in + kA1/6.0d0 +kA2/3.0d0 + kA3/3.0d0 + kA4/6.0d0
