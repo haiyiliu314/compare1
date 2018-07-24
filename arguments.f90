@@ -19,7 +19,7 @@
   !physical parameters
   double precision, parameter                  ::hbar = 0.6582119514d0, e = 1.60217662d-19  
   !physical parameters  unit of hbar: meV * ps
-  double precision, parameter                  ::Ebind = 4.18d0, gamma = 8d0/Ebind, Eg = 1.5d3, decay_m =100d0
+  double precision, parameter                  ::Ebind = 4.18d0, gamma = 1.56d0/Ebind, Eg = 1.50d3, decay_m =10d0/Ebind
   !Ebind: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   !decay_m: dephasing caused by quantum memory unit: meV
   double precision, parameter                  ::omega_1s = (0d0)/hbar, &    
@@ -27,9 +27,9 @@
                                                  A_freq_para = (Eg-4d0*Ebind)/hbar
 !                                                 A_freq_para = omega_1s
 !                                                dipole: unit: m*e(elementary charge)
-  double precision, parameter                  ::dt = t_end/dble(Nt), E_T = Ebind/hbar           
+  double precision, parameter                  ::dt = t_end/dble(Nt)           
   !length of one time step
-  complex*16,parameter                         ::ii = (0.0d0, 1.0d0)
+
 !-------------------LAPACK-----------------------
   integer, parameter                           ::LDA = Ny, LDVL = Ny, LDVR = Ny
   integer, parameter                           ::LWMAX = 10000
@@ -43,7 +43,7 @@
                                                  W2( Ny ), A2( LDA, Ny )
   character                                    ::YES = 'V',NO = 'N'
 !-------------------end LAPACK-----------------------
-  double precision                             ::E_excit = 1.0d-3, shift = (Eg - omega_1s*hbar)/Ebind,A_excit = 1d1*(Eg/3d0/hbar)/A_freq_para
+  double precision                             ::E_excit = 1.0d-3, shift = (Eg - omega_1s*hbar)/Ebind,A_excit = 1d3*(Eg/3d0/hbar)/A_freq_para
   !E_excit: excitation level(unit: binding energy)  shift: shift caused by rotation frame 
   !(unit: binding energy)
   !A_excit: unit: V*ps/m
@@ -56,7 +56,7 @@
   double precision                             ::y_fine(N_fine) = 0.0d0, dy_fine
   !y_fine: finer grid for removal of singularity   dy_fine: length of one step of finer grid for
   !removal of ringularity  f:density
-  complex*16                                   ::p(2*Nm_o+1, Ny) = 0.0d0, &
+  complex*16                                   ::p(2*Nm_o+1, Ny) = 0.0d0, ii = (0.0d0, 1.0d0), &
                                                  f(2*Nm_o+1, Ny) = 0.0d0, coup(Ny), &
                                                  decay(2*Nm_o+1, Ny) = 0.0d0, &
                                                  p_proj(Ny), p_proj1(Ny), &
@@ -78,7 +78,6 @@
   !list_file: file name for output
   character(len=100)                           ::format_V, format_V1, format_V2, format_V3, format_V4     
   !format_V: format for output
-  integer                                      ::i2
   contains
 
 
@@ -90,7 +89,7 @@
       y(Ndo) = dy*(dble(Ndo) - 0.50d0)           !y grid
     end do
     dy_fine = dy/dble(N_fine)             !y step for finer grid
-!    dipole = dipole/(1+y*y*Ebind/Eg)
+    dipole = dipole/(1+y*y*Ebind/Eg)
   end subroutine constant
 
 end module constants
