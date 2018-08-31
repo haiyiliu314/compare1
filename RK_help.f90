@@ -148,14 +148,14 @@
       end if
 !      coup = 0d0
       p_sum_part_m = matmul(p_via(Ndo_m, :), coul_mat(abs(Ndo_m-Nm_o-1)+1, :, :))
-      p_out(Ndo_m, :) = -ii*(y*y*p_via(Ndo_m, :) - 2.0d0*pf_sum - 250d0/hbar*1d-7*y*Atime(nt_via)*coup&
-                        +shift*p_via(Ndo_m, :)&
-                        -((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
-                        (p_sum_part_m - 2.0d0*fp_sum) )- ii*decay_m*decay_via(Ndo_m, :) )/hbar*dt*Ebind
-!      p_out(Ndo_m, :) = -(0.0d0,1.0d0)*(y*y*p_via(Ndo_m, :) - 2.0d0*pf_sum - 250d0/hbar*1d-7*y*Atime(nt_via)*coup+&
-!                        shift*p_via(Ndo_m, :) - (0.0d0,1.0d0) * gamma * p_via(Ndo_m, :) -&
-!                        ((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
-!                        (p_sum_part_m - 2.0d0*fp_sum) ) )/hbar*dt*Ebind
+!      p_out(Ndo_m, :) = -ii*(y*y*p_via(Ndo_m, :) - 2.0d0*pf_sum - 250d0/hbar*1d-7*y*Atime(nt_via)*coup&
+!                        +shift*p_via(Ndo_m, :)&
+!                        -((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
+!                        (p_sum_part_m - 2.0d0*fp_sum) )- ii*decay_m*decay_via(Ndo_m, :) )/hbar*dt*Ebind
+      p_out(Ndo_m, :) = -(0.0d0,1.0d0)*(y*y*p_via(Ndo_m, :) - 2.0d0*pf_sum - 250d0/hbar*1d-7*y*Atime(nt_via)*coup+&
+                        shift*p_via(Ndo_m, :) - (0.0d0,1.0d0) * gamma * p_via(Ndo_m, :) -&
+                        ((abs(dble(Ndo_m == (Nm_o+1)))-2.0d0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
+                        (p_sum_part_m - 2.0d0*fp_sum) ) )/hbar*dt*Ebind
       f_out(Ndo_m, :) = (conjg(Etime(nt_via)*dipole/Ebind)*p_via(Ndo_m, :) - Etime(nt_via)*dipole/Ebind&
                         *conjg(p_via((2*Nm_o+2)-Ndo_m, :)) &
                         +(pp_sum_plus-pp_sum)- ii *(dble(Ndo_m==Nm_o+1)+1)*gamma &

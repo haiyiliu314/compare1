@@ -22,9 +22,9 @@
   double precision, parameter                  ::Ebind = 4.18d0, gamma = 0d0/Ebind, Eg = 1.50d3, decay_m =0d0/Ebind
   !Ebind: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   !decay_m: dephasing caused by quantum memory unit: meV
-  double precision, parameter                  ::omega_1s = (0d0)/hbar, &    
+  double precision, parameter                  ::omega_1s = (0d0)/hbar/2d0, &    
                                                  !A_freq_para = (Eg-4d0*Ebind+2d0*Ebind+12d0*Ebind*(20d0/50d0 - 0.5d0))/2d0/hbar
-                                                 A_freq_para = (Eg-4d0*Ebind/9d0)/hbar/10d0
+                                                 A_freq_para = (Eg-4d0*Ebind/9d0)/hbar/2d0
 !                                                 A_freq_para = omega_1s
 !                                                dipole: unit: m*e(elementary charge)
   double precision, parameter                  ::dt = t_end/dble(Nt)           
