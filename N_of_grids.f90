@@ -2,10 +2,10 @@ module N_of_grids
 !07/03/2017 creation
 !define the dimension of all the tensors
   implicit none
-  double precision, parameter                  ::scale1 = 4d0
-  integer, parameter                           ::Nt = 32000*scale1*0.5, Nt_RWA = 1500        
+  double precision, parameter                  ::scale1 = 0.8d0
+  integer, parameter                           ::Nt = 3d4*scale1, Nt_RWA = 2000        
   !Nt: number of time step
-  integer, parameter                           ::Ny = 175, N_fine = 50, Nphi = 100, Nm_o = 2
+  integer, parameter                           ::Ny = 100, N_fine = 50, Nphi = 100, Nm_o = 2
   !Ny: number of step for y; N_fine: number of step for fine grid to remove singularity  
   !Nphi: number of step for integrating the angle when calculating Coulomb matrix
   !Nm_o: order of m; 
