@@ -17,7 +17,7 @@ program main
   use params
   implicit none
   integer                                                       ::Ndo, Ndo_m, i2, Ndo_in, i3, i4
-  complex*32                                                    ::osc_str(Ny)
+  complex*16                                                    ::osc_str(Ny)
   call constant  
   call coul_matrix
   call readdata
@@ -31,7 +31,7 @@ program main
 !  write(list_file, '(A)') 'f_end.dat'             !f
 !  open(unit=709,file=list_file)
 !  do i4 = 10:10
-!  A_excit = (1+dble(i4)*0.1)*1d5*(Eg/3.0q0/hbar)/A_freq_para
+!  A_excit = (1+dble(i4)*0.1)*1d5*(Eg/3.0d0/hbar)/A_freq_para
 
 
 
@@ -78,21 +78,21 @@ program main
     
     !calculate p(0)
     do Ndo_in = 1, 2*Nm_o+1
-      ft(Ndo_in) = dy*sum(y*f(Ndo_in, :))/(2.0q0*pi)   !calculate macroscopic density
-      pt(Ndo_in) = dy*sum(y*p(Ndo_in, :))/(2.0q0*pi)/(0.125q0)**2   !calculate macroscopic polarization
+      ft(Ndo_in) = dy*sum(y*f(Ndo_in, :))/(2.0d0*pi)   !calculate macroscopic density
+      pt(Ndo_in) = dy*sum(y*p(Ndo_in, :))/(2.0d0*pi)/(0.125d0)**2   !calculate macroscopic polarization
     end do
-    J_THZ_t = dy*sum(y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0q0*pi)   !calculate macroscopic density
+    J_THZ_t = dy*sum(y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
     if(Ndo == i2*Nt/Nt_RWA) then
       write(703, format_V2) abs(pt)
       write(704, format_V2) abs(ft)
-      write(711, format_V3) abs(dy*sum(y*y*(p(Nm_o, :)+ p(Nm_o+2, :)))/(4.0q0*pi))
+      write(711, format_V3) abs(dy*sum(y*y*(p(Nm_o, :)+ p(Nm_o+2, :)))/(4.0d0*pi))
     end if
-    call RK(E_freq, p_freq, p1_freq, f, p, decay, real(Ndo,16), A_freq, J_THZ_freq, &              !input
+    call RK(E_freq, p_freq, p1_freq, f, p, decay, real(Ndo,8), A_freq, J_THZ_freq, &              !input
             E_freq, p_freq, p1_freq, f, p, decay, A_freq, J_THZ_freq)                           !output
     if(Ndo == i2*Nt/Nt_RWA) then
      
-      write(702, format_V1) real(Etime(real(Ndo,16)))
-      write(705, format_V3) real(Atime(real(Ndo,16))), aimag(Atime(real(Ndo,16)))
+      write(702, format_V1) real(Etime(real(Ndo,8)))
+      write(705, format_V3) real(Atime(real(Ndo,8))), aimag(Atime(real(Ndo,8)))
       write(706, format_V3) real(J_THZ_t), aimag(J_THZ_t)
       i2 = i2+1
     end if
@@ -190,13 +190,13 @@ program main
   open(unit=700,file=list_file)
   write(format_V, '(A12, I4, A18)')   '(SE48.32e3, ', 1, '(", ",SE48.32e3))'  
     write(700, format_V) t_end		!1
-    write(700, format_V) dt*1q6   		!2
+    write(700, format_V) dt*1d6   		!2
     write(700, *) Nt		!3
     write(700, format_V) ymax		!4
     write(700, *) Ny		!5
-    write(700, format_V) A_excit*A_freq_para*1q-8		!6
+    write(700, format_V) A_excit*A_freq_para*1d-8		!6
     write(700, *) gamma		!7
-    write(700, *) 2.0q0*pi/A_freq_para*1000.0q0		!8
+    write(700, *) 2.0d0*pi/A_freq_para*1000.0d0		!8
     write(700, *) Nt_RWA		!9
     write(700, *) tstart_A		!10
     write(700, *) sigmat_A		!11
