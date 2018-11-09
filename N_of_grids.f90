@@ -3,9 +3,9 @@ module N_of_grids
 !define the dimension of all the tensors
   implicit none
   real*16, parameter                  ::scale1 = 0.8q0
-  integer, parameter                           ::Nt = 10000*scale1, Nt_RWA = 2000        
+  integer, parameter                           ::Nt = 20000*scale1, Nt_RWA = 2000        
   !Nt: number of time step
-  integer, parameter                           ::Ny = 10, N_fine = 50, Nphi = 100, Nm_o = 2
+  integer, parameter                           ::Ny = 100, N_fine = 50, Nphi = 100, Nm_o = 3
   !Ny: number of step for y; N_fine: number of step for fine grid to remove singularity  
   !Nphi: number of step for integrating the angle when calculating Coulomb matrix
   !Nm_o: order of m; 
@@ -14,3 +14,8 @@ module N_of_grids
   integer                                      ::i1, num = 1                                      
   !i1, num: integer for do loop for output
 end module N_of_grids 
+
+
+
+
+

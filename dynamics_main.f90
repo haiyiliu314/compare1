@@ -102,11 +102,16 @@ program main
         write(710, format_V) aimag(p(i1, :))
         write(707, format_V) real(f(i1, :))
         write(708, format_V) aimag(f(i1, :))
-        write(807, format_V) real(decay(i1, :))
-        write(808, format_V) aimag(decay(i1, :))
+!        write(807, format_V) real(decay(i1, :))
+!        write(808, format_V) aimag(decay(i1, :))
       end do
       i3 = i3+1
+      write(807, format_V) aimag(conjg(Etime(real(Ndo,16))*dipole/Ebind)*p(Nm_o+1, :))
+      write(808, format_V) real((conjg(Etime(real(Ndo,16))*dipole/Ebind)*p(Nm_o+1, :) - Etime(real(Ndo,16))*dipole/Ebind&
+                        *conjg(p(Nm_o+1, :))))
     end if
+
+
   end do
   close(700)
   close(701)

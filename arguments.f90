@@ -9,7 +9,7 @@
   !t_end: whole time
 !  integer                                      ::m(2*Nm_o+1) = 0
 !  !m: order of circular harmonics
-  real*16, parameter                  ::ymax = 1.0q0, dy = ymax/real(Ny,16) 
+  real*16, parameter                  ::ymax = 10.0q0, dy = ymax/real(Ny,16) 
   !ymax: maximum value for y   dy: length of one step for y grid
   real*16, parameter                  ::sigmat = 0.3q0, tstart = -3q0,&
                                                  sigmat_A = 0.05q0, tstart_A = -0.4q0 
@@ -20,12 +20,12 @@
   !physical parameters
   real*16, parameter                  ::hbar = 0.6582119514q0, e = 1.60217662q-19  
   !physical parameters  unit of hbar: meV * ps
-  real*16, parameter                  ::Ebind = 4.18q0, gamma = r_0/Ebind, Eg = 1.50q3, decay_m =r_0/Ebind
+  real*16, parameter                  ::Ebind = 4.18q0, gamma = 1.0q0/Ebind, Eg = 1.50q3, decay_m =5.0q0/Ebind
   !Ebind: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   !decay_m: dephasing caused by quantum memory unit: meV
   real*16, parameter                  ::omega_1s = (r_0)/hbar/2.0q0, &    
                                                  !A_freq_para = (Eg-4q0*Ebind+2q0*Ebind+12q0*Ebind*(20q0/50q0 - 0.5q0))/2q0/hbar
-                                                 A_freq_para = (Eg-4.0q0*Ebind/9.0q0)/hbar/2.0q0
+                                                 A_freq_para = (Eg-4.0q0*Ebind/25.0q0)/hbar/3.0q0
 !                                                 A_freq_para = omega_1s
 !                                                dipole: unit: m*e(elementary charge)
   real*16, parameter                  ::dt = t_end/real(Nt,16)           
@@ -44,12 +44,12 @@
                                                  W2( Ny ), A2( LDA, Ny )
   character                                    ::YES = 'V',NO = 'N'
 !-------------------end LAPACK-----------------------
-  real*16                             ::E_excit = 1.0q-3, shift = (Eg - omega_1s*hbar)/Ebind,    A_excit = 1q-14/A_freq_para*1q8
+  real*16                             ::E_excit = 1.0q-3, shift = (Eg - omega_1s*hbar)/Ebind,    A_excit = 0.5q0/A_freq_para
   !E_excit: excitation level(unit: binding energy)  shift: shift caused by rotation frame 
   !(unit: binding energy)
-  !A_excit: unit: V*ps/m
+  !A_excit: unit: V*ps/A
   real*16                             ::coul_mat(Nm_o+1, Ny, Ny) = r_0, &
-                                                 Etemp(Ny), Etemp1(Ny), Emax, dipole(Ny) = 5.0q-10
+                                                 Etemp(Ny), Etemp1(Ny), Emax, dipole(Ny) = 5.0q0
   !coul_mat: Coulomb matrix(non-symmetric)(unit: binding energy) Et: electrical field 
   !for excitation
   real*16                             ::y(Ny)=r_0, delta_1s = A_freq_para - omega_1s
@@ -90,7 +90,7 @@
       y(Ndo) = dy*(real(Ndo,16) - 0.50q0)           !y grid
     end do
     dy_fine = dy/real(N_fine,16)             !y step for finer grid
-    dipole = dipole/(1+y*y*Ebind/Eg)
+    dipole = dipole/(1q0+y*y*Ebind/Eg)
   end subroutine constant
 
 end module constants

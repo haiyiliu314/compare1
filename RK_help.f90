@@ -146,19 +146,19 @@
         else if(Ndo_m == 2*Nm_o+1) then
         coup = (p_via(Ndo_m-1, :))/2.0q0
       end if
-      coup = 0.0q0
+!      coup = 0.0q0
       p_sum_part_m = matmul(p_via(Ndo_m, :), coul_mat(abs(Ndo_m-Nm_o-1)+1, :, :))
-!      p_out(Ndo_m, :) = -z_i*(y*y*p_via(Ndo_m, :) - 2.0q0*pf_sum - 250.0q0/hbar*1d-7*y*Atime(nt_via)*coup&
-!                        +shift*p_via(Ndo_m, :)&
-!                        -((abs(real(Ndo_m == (Nm_o+1),16))-2.0q0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
-!                        (p_sum_part_m - 2.0.0q0*fp_sum) )- z_i*decay_m*decay_via(Ndo_m, :) )/hbar*dt*Ebind
-      p_out(Ndo_m, :) = -(0.0q0,1.0q0)*(y*y*p_via(Ndo_m, :) - 2.0q0*pf_sum - 250.0q0/hbar*1.0q-7*y*Atime(nt_via)*coup+&
-                        shift*p_via(Ndo_m, :) - (0.0q0,1.0q0) * gamma * p_via(Ndo_m, :) -&
-                        ((abs(real(dble(Ndo_m == (Nm_o+1)),16))-2.0q0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
-                        (p_sum_part_m - 2.0q0*fp_sum) ) )/hbar*dt*Ebind
+      p_out(Ndo_m, :) = -z_i*(y*y*p_via(Ndo_m, :) - 2.0q0*pf_sum - 250.0q0/hbar*1q-7*y*Atime(nt_via)*coup&
+                        +shift*p_via(Ndo_m, :)&
+                        -((abs(real(Ndo_m == (Nm_o+1),16))-2.0q0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
+                        (p_sum_part_m - 2.0.0q0*fp_sum) )- z_i*decay_m*decay_via(Ndo_m, :) )/hbar*dt*Ebind
+!      p_out(Ndo_m, :) = -z_i*(y*y*p_via(Ndo_m, :) - 2.0q0*pf_sum - 250.0q0/hbar*1.0q3*y*Atime(nt_via)*coup+&
+!                        shift*p_via(Ndo_m, :) - z_i * gamma * p_via(Ndo_m, :) -&
+!                        ((abs(real(dble(Ndo_m == (Nm_o+1)),16))-2.0q0*f_via(Ndo_m, :)) *Etime(nt_via)*dipole/Ebind+&
+!                        (p_sum_part_m - 2.0q0*fp_sum) ) )/hbar*dt*Ebind
       f_out(Ndo_m, :) = (conjg(Etime(nt_via)*dipole/Ebind)*p_via(Ndo_m, :) - Etime(nt_via)*dipole/Ebind&
                         *conjg(p_via((2*Nm_o+2)-Ndo_m, :)) &
-                        +(pp_sum_plus-pp_sum)- z_i *real(dble(Ndo_m==Nm_o+1)+1.0q0,16)*gamma &
+                        +(pp_sum_plus-pp_sum)- z_i *real(real(dble(Ndo_m==Nm_o+1),16)+1.0q0,16)*gamma &
                         * f_via(Ndo_m, :))&
                         /hbar*dt/z_i*Ebind
 !      f_out = 0.0q0
