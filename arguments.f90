@@ -46,7 +46,7 @@
   double precision                             ::sigmat = 0.7d0, tstart = -3d0,&
                                                  sigmat_A = 0.05d0
   double precision                             ::t_end = 0.0d0
-  double precision                             ::ymax = 10.0d0, dy = 0d0, gamma = 1d0/Ebind
+  double precision                             ::ymax = 10.0d0, dy = 0d0, gamma = 0.5d0/Ebind
   double precision                             ::dt = 0d0, decay_m =0.0d0/Ebind
   double precision                             ::tstart_A = 0d0 
   double precision                             ::E_excit = 1.0d-3, shift = (Eg - omega_1s*hbar)/Ebind,A_excit = 0.0d0
@@ -130,10 +130,10 @@
 !    decay_m =5.0d0*gamma*Ebind*10.0d0**((readin - 1d0)/10.0d0*3d0)/Ebind
 !    gamma = (1.0d0+0.1d0*readin)/Ebind
 !    scale1 = 2.0d0*hbar/(gamma*Ebind)
-    scale1 = 0.05d0
+    scale1 = 0.1d0
     sigmat_A = 1.0d0*scale1
     tstart_A = -10.0d0*scale1
-    t_end = 180d0*scale1
+    t_end = 160d0*scale1
 !    t_end = -2.0d0*tstart_A
     Nt = FLOOR(40d5*scale1/Nt_RWA)*Nt_RWA
     delta_1s = A_freq_para - omega_1s
