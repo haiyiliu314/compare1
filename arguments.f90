@@ -17,7 +17,7 @@
   !physical parameters
   double precision, parameter                  ::hbar = 0.6582119514d0, e = 1.60217662d-19, f_s =  0.0072973525693d0, eps_r = 8.5d0, c_vac = 299792458.0d-12
   !physical parameters  unit of hbar: meV * ps, f_s: fine-structure constant, eps_r: relative permittivity, c_vac: speed of light
-  double precision, parameter                  ::E_B = 1.959975589260364d1, Eg = 256.355233582072d0*E_B, a_B = hbar*c_vac*f_s/(2.0d0*eps_r*E_B)
+  double precision, parameter                  ::E_B = 1.959975589260364d1, Eg = 256.355233582072d0*E_B, a_B = 2.0d0*eps_r*E_B/f_s/hbar/c_vac
   !E_B: binding energy(meV)   gamma: dephasing factor (meV) Eg: ground state energy
   !decay_m: dephasing caused by quantum memory unit: meV
   double precision, parameter                  ::omega_1s = (0d0)/hbar   
