@@ -19,7 +19,7 @@ module params
     write(600, *) 'maximum value of y' 
     write(600, format_V) ymax
     write(600, *) 'Peak of electrical field(MV/cm)' 
-    write(600, format_V) A_excit*Ebind*1.129572800243224d3/50d0
+    write(600, format_V) A_excit*E_B*1.129572800243224d3/50d0
     write(600, *) 'dephasing(meV)'
     write(600, *) gamma
     write(600, *) 'time for one cycle(fs)'
