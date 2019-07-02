@@ -51,6 +51,7 @@ module coul_mat_module
     do Ndo_m = 1, Nm_o+1
       do Ndo = 1, Ny
         y_fine = y(Ndo) - dy/2.0d0 + fine_grid   
+
         !calculate the finer grid for diagonal terms
 !------------calculate the Coulomb matrix without removal of singularity-------------
         do Ndo_in = 1, Nphi
@@ -87,10 +88,10 @@ module coul_mat_module
             gcc_conf1 = gcc_para(round_y1+1) + (y_leng1 - y_para(round_y1+1))/(y_para(round_y1+2)-y_para(round_y1+1))*(gcc_para(round_y1+2)-gcc_para(round_y1+1))
             gch_conf1 = gch_para(round_y1+1) + (y_leng1 - y_para(round_y1+1))/(y_para(round_y1+2)-y_para(round_y1+1))*(gch_para(round_y1+2)-gch_para(round_y1+1))
             ghh_conf1 = ghh_para(round_y1+1) + (y_leng1 - y_para(round_y1+1))/(y_para(round_y1+2)-y_para(round_y1+1))*(ghh_para(round_y1+2)-ghh_para(round_y1+1))
-            coul_mat(Ndo_m, Ndo, Ndo)=coul_mat(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1/ dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))/pi*dy   
-            coul_mat_cc(Ndo_m, Ndo, Ndo)=coul_mat_cc(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1/ dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*gcc_conf1/pi*dy   
-            coul_mat_ch(Ndo_m, Ndo, Ndo)=coul_mat_ch(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1/ dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*gch_conf1/pi*dy   
-            coul_mat_hh(Ndo_m, Ndo, Ndo)=coul_mat_hh(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1/ dble(N_fine) * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*ghh_conf1/pi*dy   
+            coul_mat(Ndo_m, Ndo, Ndo)=coul_mat(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1 * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))/pi*dy/ dble(N_fine)  
+            coul_mat_cc(Ndo_m, Ndo, Ndo)=coul_mat_cc(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1 * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*gcc_conf1/pi*dy/ dble(N_fine)   
+            coul_mat_ch(Ndo_m, Ndo, Ndo)=coul_mat_ch(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1 * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*gch_conf1/pi*dy/ dble(N_fine)   
+            coul_mat_hh(Ndo_m, Ndo, Ndo)=coul_mat_hh(Ndo_m, Ndo, Ndo) + (1.0d0/y_leng1 * 2.0d0 *y_fine(Ndo_in) * w11(Ndo_in_in)* dcos( dble(Ndo_m-1)*b(Ndo_in_in) ))*ghh_conf1/pi*dy/ dble(N_fine)   
 !            write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
 !            write(700, format_V) y_leng1
           end do
