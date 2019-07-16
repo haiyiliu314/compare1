@@ -69,7 +69,7 @@ double precision,parameter :: ratio_et=(0.4d0*d_ch*rydberg*a_bohr)/(nz_aln*Ele_s
 
 !Detuning and dephasing
 double precision,parameter :: gamma_1=0.000d0/E_B
-double precision,parameter :: gamma_2=0.003d0/E_B
+double precision,parameter :: gamma_2=0.002d0/E_B
 double precision,parameter :: gamma_qm=5d0*gamma_2
 double precision,parameter :: E_shift=0d0/E_B
 double complex,parameter :: f_detune=dcmplx(0d0,-gamma_1)
@@ -130,7 +130,7 @@ integer :: n_sample
 integer :: order_polar
 integer :: num_ml
 character(1) ::str_ml
-character(30),parameter :: char_head='/qstlhome/liuhai/run/Add_confinement/code/'
+character(30),parameter :: char_head='/home/qilew/Desktop/gan_input/'
 character(13),parameter :: char_taily='ml/y_para.txt'
 character(4),parameter :: char_midg='ml/g'
 character(9),parameter :: char_tailg='_para.txt'
@@ -139,8 +139,6 @@ character(2),parameter :: char_cc='cc'
 character(2),parameter :: char_hh='hh'
 character(44) :: yfile_name
 character(46) :: gfile_name
-character(len=100)  ::format_V,format_V1
-character(80)  ::list_file
 double precision,pointer :: Vcoul_ch(:,:,:)
 double precision,pointer :: Vcoul_cc(:,:,:),Vcoul_hh(:,:,:)
 !********************************************************************
@@ -172,7 +170,7 @@ double precision :: f_max,w_broad
 double precision :: t0,thf,t1
 integer :: m_max,p_order,order_p2
 integer :: time_step
-integer :: j_rk4, i1
+integer :: j_rk4
 !********************************************************************
 
 !********************************************************************
@@ -183,12 +181,12 @@ double precision :: sweep_w,sweep_step,sweep_end
 !units of vector potential
 double precision :: A_0,A0_sq
 !********************************************************************
-integer  ::readin
+
 
 !********************************************************************
 !Get the y-grid
 y_max=30d0
-n_y=200
+n_y=400
 m_y=50
 allocate(y_j(n_y))
 call half_inte_gri(y_j,delta_y,y_max,n_y)
@@ -213,26 +211,25 @@ allocate(y_para(n_sample))
 num_ml=2
 write(str_ml,'(i1)'),num_ml
 
-yfile_name='y_para.txt'
+yfile_name=char_head//str_ml//char_taily
 open(unit=11,file=yfile_name)
 read(11,*) y_para
 close(11)
 
-gfile_name='gch_para.txt'
+gfile_name=char_head//str_ml//char_midg//char_ch//char_tailg
 open(unit=11,file=gfile_name)
 read(11,*) gch_para
 close(11)
 
-gfile_name='gcc_para.txt'
+gfile_name=char_head//str_ml//char_midg//char_cc//char_tailg
 open(unit=11,file=gfile_name)
 read(11,*) gcc_para
 close(11)
 
-gfile_name='ghh_para.txt'
+gfile_name=char_head//str_ml//char_midg//char_hh//char_tailg
 open(unit=11,file=gfile_name)
 read(11,*) ghh_para
 close(11)
-
 !*********************************************************************
 
 order_polar=2 !cutoff at order_polar-1
@@ -242,19 +239,10 @@ allocate(Vcoul_cc(n_y,n_y,order_polar),Vcoul_hh(n_y,n_y,order_polar))
 call coulomb_mat(Vcoul_ch,Vcoul_cc,Vcoul_hh,order_polar, &
 	& delta_y,y_j,n_y,m_y, &
 	& y_para,gch_para,gcc_para,ghh_para,n_sample)
-  write(list_file, '(A)') 'Vcoul_ch.dat'       !eigen values
-  open(unit=700,file=list_file)
-  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', 1, '(", ",SE24.16e3))'
-  write(format_V1, '(A12, I4, A18)')   '(SE24.16e3, ', n_y, '(", ",SE24.16e3))'
-  do i1 = 1, n_y
-      write(700, format_V) real(Vcoul_ch(:,i1,1))
-  end do
+
 Vcoul_cc(:,:,:)=(Vcoul_cc(:,:,:)+Vcoul_hh(:,:,:))/2d0
-!===================================================================================================================================================================================!                 
- Vcoul_cc(:,:,:) = 0.0d0
- Vcoul_ch(:,:,:) = 0.0d0
-!===================================================================================================================================================================================
-open(unit=20,file='univ_constants.txt')
+
+open(unit=20,file='/home/qilew/Desktop/gan_2b_output/SBE_qm_new_wsweep/univ_constants.txt')
 	write(20,*),'Effective masses:'
 	write(20,*),'m_c=',mass_c,' m_0'
 	write(20,*),'m_h=',mass_h,' m_0'
@@ -301,7 +289,7 @@ open(unit=20,file='univ_constants.txt')
 w_broad=gamma_2/(2d0*Pi) !Broadening of the driving field in frequency domain in units of E_B
 !w_broad=10d0 
 f_max=E_tau_r*w_broad
-write(*,*) f_max
+
 !delta_t=1/(E_tau_r*y_max**2d0)
 !delta_t=1/(800d0*f_max) 
 delta_t=Pi/(4000d0*E_tau_r) 
@@ -311,13 +299,10 @@ thirdelta_t=delta_t/3d0
 sxdelta_t=delta_t/6d0
 
 time_step=int(6d0/(gamma_2*E_tau_r*delta_t))           !Errors depend on the time_step
-
 if(gamma_2>w_broad) then
 	time_step=int(6d0/(w_broad*E_tau_r*delta_t))           !Errors depend on the time_step
 end if
-!time_step = 10
 !*********************************************************************
-
 
 
 	order_p2=2*order_polar
@@ -334,28 +319,22 @@ end if
 
 	allocate(omega_ch(n_y,p_order),omega_qm(n_y,p_order))
 	allocate(omega_cnh(n_y,p_order))
-  write(list_file, '(A)') 'omega_sweep.dat'
-  open(unit=11,file=list_file)
-  write(list_file, '(A)') 'density.dat'
-  open(unit=14,file=list_file)
-  write(list_file, '(A)') 'test.dat'
-  open(unit=15,file=list_file)
-  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', 1, '(", ",SE24.16e3))'
-  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', n_y, '(", ",SE24.16e3))'
-!=============================================================================================================================================================
 
-open(unit = 100, file = 'fort.42', status = 'old', action = 'read')
-read(100,*) readin
+open(unit=11,file='/home/qilew/Desktop/gan_2b_output/SBE_qm_new_wsweep/omega_sweep.bin',form='unformatted',access='stream',status='replace')
 
-sweep_end=25d-3
-sweep_step=0.6d-3
+open(unit=14,file='/home/qilew/Desktop/gan_2b_output/SBE_qm_new_wsweep/density.bin',form='unformatted',access='stream',status='replace')
+
+
+sweep_w=-0.015d0
+sweep_end=0.015d0
+sweep_step=0.00025d0
 Efr_source0=5.018528494722949d0/2d0
-sweep_w=-15d-3+dble(readin)*sweep_step
+
 ratio_correct=ratio_et*delta_y
 
 call cpu_time(tic_cpu)
 
-
+do while(sweep_w<=sweep_end)
 
     Efr_source=Efr_source0+sweep_w
 
@@ -464,17 +443,18 @@ call cpu_time(tic_cpu)
 			& omega_ch,omega_qm,omega_cnh)
 
 
-    write(15,format_V)   E_dot_dch*E_t
 	end do
-    write(14,format_V) dble(sum(f_e0(:,order_polar)*y_j(:)))
-!    write(*,*) sweep_w
-    write(11,format_V) sweep_w
 
+    write(*,*),sweep_w
+    write(11),sweep_w
+    write(14),real(sum(f_e0(:,order_polar)*y_j(:)))
 
+    sweep_w=sweep_w+sweep_step
+end do
 
- close(11)
- close(14)
- close(15)
+close(11)
+close(14)
+
 call cpu_time(toc_cpu)
 
 write(20,*),'Total time:',toc_cpu-tic_cpu,'s'
@@ -637,13 +617,12 @@ subroutine rhs_sbe(kp_ch,kg_qm,kf_e,p_ch,g_qm,f_e,order_polar,m_max,p_order,orde
 
     	mvec_chkap(:)=A0_y(:)*At_plus
     	mvec_chkam(:)=conjg(mvec_chkap(:))
- !       mvec_chkam(:) = 0.0d0
 
 	do j=1,p_order
 
 		kp_ch(:,j)=mvec_ch(:)*p_ch(:,j)
 		kg_qm(:,j)=Eqm_y2(:)*g_qm(:,j)		
-                         
+
 		j_med1=j-1
 		if(j_med1>=1 .AND. j_med1<=p_order) then
 			kp_ch(:,j)=kp_ch(:,j)+mvec_chkam(:)*p_ch(:,j_med1)
@@ -657,7 +636,6 @@ subroutine rhs_sbe(kp_ch,kg_qm,kf_e,p_ch,g_qm,f_e,order_polar,m_max,p_order,orde
 		end if
 
 	end do
-
 
     	kp_ch(:,:)=E_tau*(kp_ch(:,:)+c_detune*g_qm(:,:)-domega_ch(:,:)-media_ch1(:,:)+media_ch2(:,:))
 
@@ -802,15 +780,16 @@ subroutine coulomb_mat(Vcoul_ch,Vcoul_cc,Vcoul_hh,order_polar, &
 				vcc_small(j2,circ_m)=v_l(j2)*sum(w_cheby(:)*fcc_cheby(:,circ_m))
 				vhh_small(j2,circ_m)=v_l(j2)*sum(w_cheby(:)*fhh_cheby(:,circ_m))
 			end do
+
 		end do
 
-!write(*,*) w_cheby
 		do circ_m=1,order_polar
 			Vcoul_ch(j1,j1,circ_m)=sum(vch_small(:,circ_m))*m_pi
 			Vcoul_cc(j1,j1,circ_m)=sum(vcc_small(:,circ_m))*m_pi
 			Vcoul_hh(j1,j1,circ_m)=sum(vhh_small(:,circ_m))*m_pi
 		end do
 	end do	
+
 
 end subroutine coulomb_mat
 
@@ -885,7 +864,7 @@ subroutine coulomb_vyy(fch_cheby,fcc_cheby,fhh_cheby,order_polar, &
 			fhh_cheby(j,circ_m+1)=ghh_y*dcos(circ_m*theta(j))/y
 		end do
 	end do
-!write(*,*) y
+
 end subroutine coulomb_vyy
 
 subroutine interp_gy(y_para,gch_para,gcc_para,ghh_para,n_sample,y,gch_y,gcc_y,ghh_y)
