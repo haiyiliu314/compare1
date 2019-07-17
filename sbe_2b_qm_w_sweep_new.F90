@@ -69,7 +69,7 @@ double precision,parameter :: ratio_et=(0.4d0*d_ch*rydberg*a_bohr)/(nz_aln*Ele_s
 
 !Detuning and dephasing
 double precision,parameter :: gamma_1=0.000d0/E_B
-double precision,parameter :: gamma_2=0.005d0/E_B
+double precision,parameter :: gamma_2=0.017d0/E_B
 double precision,parameter :: gamma_qm=5d0*gamma_2
 double precision,parameter :: E_shift=0d0/E_B
 double complex,parameter :: f_detune=dcmplx(0d0,-gamma_1)
@@ -188,7 +188,7 @@ integer  ::readin
 !********************************************************************
 !Get the y-grid
 y_max=30d0
-n_y=200
+n_y=600
 m_y=50
 allocate(y_j(n_y))
 call half_inte_gri(y_j,delta_y,y_max,n_y)
@@ -348,9 +348,9 @@ open(unit = 100, file = 'fort.42', status = 'old', action = 'read')
 read(100,*) readin
 
 sweep_end=25d-3
-sweep_step=0.6d-3
+sweep_step=30d-3
 Efr_source0=5.018528494722949d0/2d0
-sweep_w=-30d-3+dble(readin)*sweep_step
+sweep_w=-1.11d0+dble(readin)*sweep_step
 ratio_correct=ratio_et*delta_y
 
 call cpu_time(tic_cpu)
