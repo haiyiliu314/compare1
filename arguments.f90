@@ -46,7 +46,7 @@
   double precision                             ::sigmat = 0.7d0, tstart = -3.0d0,&
                                                  sigmat_A = 0.05d0
   double precision                             ::t_end = 0.0d0
-  double precision                             ::ymax = 10.0d0, dy = 0d0, gamma = 2.0d0/E_B
+  double precision                             ::ymax = 10.0d0, dy = 0d0, gamma = 60.0d0/E_B, dy1(Ny), dy_sec(N_sec)
   double precision                             ::dt = 0d0, decay_m =0.0d0/E_B
   double precision                             ::tstart_A = 0d0 
   double precision                             ::E_excit = 1.0d-3, shift = (Eg - omega_1s*hbar)/E_B,A_excit = 0.0d0
@@ -58,14 +58,15 @@
                                                  coul_mat_ch(Nm_o+1, Ny, Ny) = 0.0d0, &
                                                  coul_mat_hh(Nm_o+1, Ny, Ny) = 0.0d0, &
                                                  coul_mat_f(Nm_o+1, Ny, Ny) = 0.0d0, &
-                                                 Etemp(Ny), Etemp1(Ny), Emax, dipole(Ny) = 1.30086607416965d0 !(A)
+                                                 Etemp(Ny), Etemp1(Ny), Emax, dipole(Ny) = 1.30086607416965d0, y_sec(N_sec) !(A)
   !coul_mat: Coulomb matrix(non-symmetric)(unit: binding energy) in 2D Et: electrical field 
   !for excitation
   double precision                             ::y(Ny)=0.0d0, delta_1s = 0.0d0
   !y: grid for y
-  double precision                             ::y_fine(N_fine) = 0.0d0, dy_fine, A_freq_para = 0.0d0
+  double precision                             ::y_fine(N_fine) = 0.0d0, dy_fine, dy_fine_sec(N_sec), A_freq_para = 0.0d0
   !y_fine: finer grid for removal of singularity   dy_fine: length of one step of finer grid for
   !removal of ringularity  f:density
+  integer                                      ::Ny1_help(N_sec+1) = 0
   complex*16                                   ::p(2*Nm_o+1, Ny) = 0.0d0, ii = (0.0d0, 1.0d0), &
                                                  f(2*Nm_o+1, Ny) = 0.0d0, coup(Ny), &
                                                  decay(2*Nm_o+1, Ny) = 0.0d0, &
@@ -81,7 +82,7 @@
                                                  A_freq(N_freq) = 0.0d0, J_THZ_freq(N_freq) = 0.0d0, &
                                                  p1_freq(N_freq) = 0.0d0   
   !p_freq: Fourier transform of polarization   E_freq: Fourier transform of electrical field
-  double precision                             ::freqgrid(N_freq) = 0.0d0, freqgrid1(N_freq) = 0.0d0, test(Ny) = 0.0d0, readin = 0.0d0    
+  double precision                             ::freqgrid(N_freq) = 0.0d0, freqgrid1(N_freq) = 0.0d0, test(Ny) = 0.0d0, readin = 0.0d0, y_help(N_sec+1)
   !freqgrid: frequency grid used for Fourier transform   test: irrelevant with code
   character(80)                                ::list_file, list_file1, list_file2, list_file3, &
                                                  list_file4, list_file5
@@ -95,15 +96,39 @@
   use N_of_grids
   !07/03/2017 creation
   !calculate y grid and step length for finder y grid
-    integer                                      ::Ndo   !number for do loop
+    integer                                      ::Ndo, Ndo_in   !number for do loop
 !    dy = 0.08d0
 !    ymax = dy*dble(Ny)
-    ymax = 30.0d0
-    dy = ymax/dble(Ny) 
-    do Ndo = 1,Ny
-      y(Ndo) = dy*(dble(Ndo) - 0.50d0)           !y grid
+    ymax = 15.0d0
+!    dy = ymax/dble(Ny) 
+!    y_sec = Ny1*dy
+y_sec = (/1.0d0,1.0d0,13.0d0/)
+    do Ndo = 1, N_sec
+      dy_sec(Ndo) = y_sec(Ndo)/Ny1(Ndo)
+    end do
+
+    Ny1_help(1) = 0
+    y_help(1) = 0.0d0
+    do Ndo = 1,N_sec
+      Ny1_help((Ndo+1):(N_sec+1)) = Ny1_help((Ndo+1):(N_sec+1)) + Ny1(Ndo)
+      y_help((Ndo+1):(N_sec+1)) = y_help((Ndo+1):(N_sec+1))+y_sec(Ndo)
+    end do
+
+
+
+    do Ndo = 1,N_sec
+      do Ndo_in = (Ny1_help(Ndo)+1),Ny1_help(Ndo+1)
+        y(Ndo_in) = y_help(Ndo)+dy_sec(Ndo)*(dble(Ndo_in - Ny1_help(Ndo)) - 0.50d0)           !y grid
+      end do
     end do
     dy_fine = dy/dble(N_fine)             !y step for finer grid
+    dy_fine_sec = dy_sec/dble(N_fine)             !y step for finer grid
+do Ndo = 1,N_sec
+    dy1((Ny1_help(Ndo)+1):Ny1_help(Ndo+1)) = dy_sec(Ndo)
+!    write(*,*) (Ny1_help(Ndo)+1),Ny1_help(Ndo+1)
+end do
+!write(*,*) y
+
 !    dipole = dipole/(1d0+10d0*y*y*E_B/Eg)
 !----------------2 photon----------------------
 !    A_freq_para = (Eg-0.4344975785796765d0*E_B)/hbar/2d0
@@ -118,8 +143,8 @@
 !    A_excit = 1d1*(1d3)**(1/10d0*readin)*(Eg/3d0/hbar)/A_freq_para
     decay_m = 5.0d0*gamma;
 
-    open(unit = 100, file = 'fort.42', status = 'old', action = 'read')
-    read(100,*) readin
+!    open(unit = 100, file = 'fort.42', status = 'old', action = 'read')
+!    read(100,*) readin
 !----------------2 photon----------------------
 !    A_freq_para = (Eg-(0.4d0 + 0.02d0*readin)*E_B)/hbar/2d0
 !    A_freq_para = (Eg-(-1.9d0 - 0.1d0*readin)*E_B)/hbar/2d0
@@ -133,7 +158,7 @@
 !    Nt = 5d3*scale1*(21d0-readin)
 !    A_freq_para = (Eg-(3.0d0 - 0.1d0*readin)*E_B)/hbar/2d0
 !   A_freq_para = (Eg-2.204334288969075d0*E_B)/hbar
-   A_freq_para = Eg/hbar/2.0d0+15.0d0+dble(readin)*1.5d0
+   A_freq_para = Eg/hbar/2.0d0-15.0d0!+dble(readin)*1.5d0
 
 !    A_freq_para = (Eg+40.0d0*E_B)/hbar/2d0
 !    A_excit = 1.0d-2*(1.0d4)**(readin/40d0)*1d8/A_freq_para
@@ -147,9 +172,9 @@
     t_end = 6.0d0/(gamma/2.0d0/pi*(E_B/hbar))
     dt = pi/(4.0d3*E_B/hbar)
     Nt = int(t_end/dt)
-write(*,*) Nt
-    Nt = 10
-!    Nt_RWA = Nt
+!write(*,*) Nt
+!    Nt = 10
+    Nt_RWA = Nt
 
     delta_1s = A_freq_para - omega_1s
 !    A_excit = 2d0*sqrt(sqrt(1d0/sigmat_A))/A_freq_para*1d8		!fix E*tau

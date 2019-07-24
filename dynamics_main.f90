@@ -18,6 +18,7 @@ program main
   implicit none
   integer                                                       ::Ndo, Ndo_m, i2, Ndo_in, i3, i4
   complex*16                                                    ::osc_str(Ny)
+  double precision       :: AA(Ny,Ny)
   call constant
   call coul_matrix
   call readdata
@@ -28,7 +29,7 @@ program main
   write(format_V4, '(A12, I8, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
 
 
-
+write(*,*) shape(Ny1)
 !  write(list_file, '(A)') 'f_end.dat'             !f
 !  open(unit=709,file=list_file)
 !  do i4 = 10:10
@@ -40,22 +41,21 @@ program main
     A(i2, i2) = A(i2, i2) + y(i2)*y(i2)
   end do 
   LWORK = -1
-  CALL ZGEEV(NO, YES, Ny, A, LDA, W, VL, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A, LDA, W, VL, LDVL,&
              VR, LDVR, WORK, LWORK, RWORK, INFO )
   LWORK = min( LWMAX, int( WORK( 1 ) ) )
-
-  CALL ZGEEV(NO, YES, Ny, A, LDA, W, VL, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A, LDA, W, VL, LDVL,&
              VR, LDVR, WORK, LWORK, RWORK, INFO )
-LWORK1 = LWORK
+write(*,*) 'LWORK = ', LWORK
   A1 = -1d0*TRANSPOSE(coul_mat(2, :, :))
   LWORK = -1
   do i2 = 1, Ny
     A1(i2, i2) = A1(i2, i2) + y(i2)*y(i2)
   end do 
-  CALL ZGEEV(NO, YES, Ny, A1, LDA, W1, VL1, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A1, LDA, W1, VL1, LDVL,&
              VR1, LDVR, WORK, LWORK, RWORK, INFO )
   LWORK = min( LWMAX, int( WORK( 1 ) ) )
-  CALL ZGEEV(NO, YES, Ny, A1, LDA, W1, VL1, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A1, LDA, W1, VL1, LDVL,&
              VR1, LDVR, WORK, LWORK, RWORK, INFO )
 
   A2 = -1d0*TRANSPOSE(coul_mat(3, :, :))
@@ -63,10 +63,10 @@ LWORK1 = LWORK
   do i2 = 1, Ny
     A2(i2, i2) = A2(i2, i2) + y(i2)*y(i2)
   end do 
-  CALL ZGEEV(NO, YES, Ny, A2, LDA, W2, VL2, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A2, LDA, W2, VL2, LDVL,&
              VR2, LDVR, WORK, LWORK, RWORK, INFO )
   LWORK = min( LWMAX, int( WORK( 1 ) ) )
-  CALL ZGEEV(NO, YES, Ny, A2, LDA, W2, VL2, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A2, LDA, W2, VL2, LDVL,&
              VR2, LDVR, WORK, LWORK, RWORK, INFO )
 
   A3 = -1d0*TRANSPOSE(coul_mat(4, :, :))
@@ -74,10 +74,10 @@ LWORK1 = LWORK
   do i2 = 1, Ny
     A3(i2, i2) = A3(i2, i2) + y(i2)*y(i2)
   end do 
-  CALL ZGEEV(NO, YES, Ny, A3, LDA, W3, VL3, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A3, LDA, W3, VL3, LDVL,&
              VR3, LDVR, WORK, LWORK, RWORK, INFO )
   LWORK = min( LWMAX, int( WORK( 1 ) ) )
-  CALL ZGEEV(NO, YES, Ny, A3, LDA, W3, VL3, LDVL,&
+  CALL ZGEEV(YES, YES, Ny, A3, LDA, W3, VL3, LDVL,&
              VR3, LDVR, WORK, LWORK, RWORK, INFO )
 
 !---------------end eigen vectors -------------------- 
@@ -89,10 +89,12 @@ LWORK1 = LWORK
     i2 = minloc(Etemp, 1)
     Etemp1(Ndo) = minval(Etemp, 1)
     VR_temp(:,Ndo) = VR(:,i2)
+    VL_temp(:,Ndo) = VL(:,i2)
     Etemp(i2) = Emax+1d0
   end do
   W = Etemp1
   VR = VR_temp
+  VL = VL_temp
 
   Etemp = real(W1)
   Emax = maxval(Etemp)
@@ -100,10 +102,12 @@ LWORK1 = LWORK
     i2 = minloc(Etemp, 1)
     Etemp1(Ndo) = minval(Etemp, 1)
     VR_temp(:,Ndo) = VR1(:,i2)
+    VL_temp(:,Ndo) = VL1(:,i2)
     Etemp(i2) = Emax+1d0
   end do
   W1 = Etemp1
   VR1 = VR_temp
+  VL1 = VL_temp
 
   Etemp = real(W2)
   Emax = maxval(Etemp)
@@ -111,10 +115,12 @@ LWORK1 = LWORK
     i2 = minloc(Etemp, 1)
     Etemp1(Ndo) = minval(Etemp, 1)
     VR_temp(:,Ndo) = VR2(:,i2)
+    VL_temp(:,Ndo) = VL2(:,i2)
     Etemp(i2) = Emax+1d0
   end do
   W2 = Etemp1
   VR2 = VR_temp
+  VL2 = VL_temp
 
   Etemp = real(W3)
   Emax = maxval(Etemp)
@@ -122,35 +128,37 @@ LWORK1 = LWORK
     i2 = minloc(Etemp, 1)
     Etemp1(Ndo) = minval(Etemp, 1)
     VR_temp(:,Ndo) = VR3(:,i2)
+    VL_temp(:,Ndo) = VL3(:,i2)
     Etemp(i2) = Emax+1d0
   end do
   W3 = Etemp1
   VR3 = VR_temp
+  VL3 = VL_temp
 
 !-----------end sorting-------------------------------
 !---------------Normalization-------------------------
   do Ndo = 1, Ny
-    VL(:, Ndo) = VL(:, Ndo)/sqrt(real(sum(y*VL(:, Ndo)*conjg(VL(:, Ndo))))*dy)
-    VL1(:, Ndo) = VL1(:, Ndo)/sqrt(real(sum(y*VL1(:, Ndo)*conjg(VL1(:, Ndo))))*dy)
-    VL2(:, Ndo) = VL2(:, Ndo)/sqrt(real(sum(y*VL2(:, Ndo)*conjg(VL2(:, Ndo))))*dy)
+    VL(:, Ndo) = VL(:, Ndo)/sqrt(real(sum(dy1*y*VL(:, Ndo)*conjg(VL(:, Ndo)))))
+    VL1(:, Ndo) = VL1(:, Ndo)/sqrt(real(sum(dy1*y*VL1(:, Ndo)*conjg(VL1(:, Ndo)))))
+    VL2(:, Ndo) = VL2(:, Ndo)/sqrt(real(sum(dy1*y*VL2(:, Ndo)*conjg(VL2(:, Ndo)))))
   end do
   do Ndo = 1, Ny
-    VR(:, Ndo) = VR(:, Ndo)/sqrt(real(sum(y*VR(:, Ndo)*conjg(VR(:, Ndo))))*dy)
-    VR1(:, Ndo) = VR1(:, Ndo)/sqrt(real(sum(y*VR1(:, Ndo)*conjg(VR1(:, Ndo))))*dy)
-    VR2(:, Ndo) = VR2(:, Ndo)/sqrt(real(sum(y*VR2(:, Ndo)*conjg(VR2(:, Ndo))))*dy)
+    VR(:, Ndo) = VR(:, Ndo)/sqrt(real(sum(dy1*y*VR(:, Ndo)*conjg(VR(:, Ndo)))))
+    VR1(:, Ndo) = VR1(:, Ndo)/sqrt(real(sum(dy1*y*VR1(:, Ndo)*conjg(VR1(:, Ndo)))))
+    VR2(:, Ndo) = VR2(:, Ndo)/sqrt(real(sum(dy1*y*VR2(:, Ndo)*conjg(VR2(:, Ndo)))))
   end do
   write(list_file, '(A)') 'oscillator_strength.dat'       !eigen values
   open(unit=700,file=list_file)
     write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
     do Ndo = 1, Ny
-      osc_str(Ndo) = sum(y*dipole*VR(:, Ndo)*dy/2d0/pi)
+      osc_str(Ndo) = sum(y*dipole*VR(:, Ndo)*dy1/2d0/pi)
     end do
     osc_str = osc_str*conjg(osc_str)
     write(700, format_V) abs(osc_str)
   close(700)
-  VL1 = VR1
-  VL =VR
-  VL2 =VR2
+!  VL1 = VR1
+!  VL =VR
+!  VL2 =VR2
 
 
 
@@ -192,16 +200,16 @@ LWORK1 = LWORK
   i3 = 1
   Ndo = 0.0d0
   do Ndo_in = 1, 2*Nm_o+1
-    ft(Ndo_in) = dy*sum(y*f(Ndo_in, :))/(2.0d0*pi)   !calculate macroscopic density
-    pt(Ndo_in) = dy*sum(y*p(Ndo_in, :))/(2.0d0*pi)/a_B/a_B   !calculate macroscopic polarization
+    ft(Ndo_in) = sum(dy1*y*f(Ndo_in, :))   !calculate macroscopic density
+    pt(Ndo_in) = sum(dy1*y*p(Ndo_in, :))/(2.0d0*pi)/a_B/a_B   !calculate macroscopic polarization
   end do
-  J_THZ_t = dy*sum(y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
+  J_THZ_t = sum(dy1*y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
 
   write(703, format_V2) real(pt)
   write(809, format_V2) aimag(pt)
   write(704, format_V2) abs(ft)
   write(711, format_V3) (Ndo*dt)+tstart_A    
-  write(702, format_V1) real(Etime(dble(Ndo)))
+  write(702, format_V1) real(Etime(dble(Ndo)))*dipole(1)
   write(705, format_V3) real(Atime(dble(Ndo))), aimag(Atime(dble(Ndo)))
   write(706, format_V3) real(J_THZ_t), aimag(J_THZ_t)
 
@@ -212,11 +220,11 @@ LWORK1 = LWORK
     call RK(E_freq, p_freq, p1_freq, f, p, decay, dble(Ndo), A_freq, J_THZ_freq, &              !input
             E_freq, p_freq, p1_freq, f, p, decay, A_freq, J_THZ_freq)                           !output
     do Ndo_in = 1, 2*Nm_o+1
-!      ft(Ndo_in) = dy*sum(y*f(Ndo_in, :))/(2.0d0*pi)   !calculate macroscopic density
-      ft(Ndo_in) = sum(y*f(Ndo_in, :))   !calculate macroscopic density
-      pt(Ndo_in) = sum(y*p(Ndo_in, :))   !calculate macroscopic polarization
+!      ft(Ndo_in) = sum(dy1*y*f(Ndo_in, :))/(2.0d0*pi)   !calculate macroscopic density
+      ft(Ndo_in) = sum(dy1*y*f(Ndo_in, :))*2.0d0   !calculate macroscopic density
+      pt(Ndo_in) = sum(dy1*y*p(Ndo_in, :))/(2.0d0*pi)/a_B/a_B   !calculate macroscopic polarization
     end do
-    J_THZ_t = dy*sum(y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
+    J_THZ_t = sum(dy1*y*y*(f(Nm_o, :)+ f(Nm_o+2, :)))/(4.0d0*pi)   !calculate macroscopic density
     if(Ndo == i2*FLOOR(dble(Nt)/dble(Nt_RWA))) then
       write(703, format_V2) real(pt)
       write(809, format_V2) aimag(pt)
@@ -224,12 +232,12 @@ LWORK1 = LWORK
       write(711, format_V3) (Ndo*dt)+tstart_A    
 
      
-      write(702, format_V1) real(Etime(dble(Ndo)))
+      write(702, format_V1) real(Etime(dble(Ndo)))*dipole(1)
       write(705, format_V3) real(Atime(dble(Ndo))), aimag(Atime(dble(Ndo)))
       write(706, format_V3) real(J_THZ_t), aimag(J_THZ_t)
-!      p_proj1 = matmul(p(Nm_o+2, :)*y, conjg(VL1))*dy/2d0/pi
-!      p_proj = matmul(p(Nm_o+1, :)*y, conjg(VL))*dy/2d0/pi
-!      p_proj2 = matmul(p(Nm_o-1, :)*y, conjg(VL2))*dy/2d0/pi
+!      p_proj1 = matmul(p(Nm_o+2, :)*y, conjg(VL1))*dy1/2d0/pi
+!      p_proj = matmul(p(Nm_o+1, :)*y, conjg(VL))*dy1/2d0/pi
+!      p_proj2 = matmul(p(Nm_o-1, :)*y, conjg(VL2))*dy1/2d0/pi
 !      write(800, format_V4) real(p_proj)
 !      write(800, format_V4) aimag(p_proj)
 !      write(801, format_V4) real(p_proj1)
@@ -324,6 +332,12 @@ LWORK1 = LWORK
       write(700, format_V) y
   close(700)
 
+  write(list_file, '(A)') 'dy1.dat'       !eigen values
+  open(unit=700,file=list_file)
+  write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
+      write(700, format_V) dy1
+  close(700)
+
   write(list_file, '(A)') 'dipole.dat'       !eigen values
   open(unit=700,file=list_file)
   write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
@@ -353,6 +367,8 @@ LWORK1 = LWORK
     write(700, *) E_B		!17
     write(700, *) a_B		!18
     write(700, *) Eg		!19
+    write(700, *) N_fine		!20
+    write(700, *) Nphi		!21
   close(700)
   write(list_file, '(A)') 'eigenvalues_s.dat'       !eigen values
   open(unit=700,file=list_file)
@@ -383,7 +399,7 @@ LWORK1 = LWORK
   write(list_file, '(A)') 'eigenvec_1s.dat'       !eigen values
   open(unit=700,file=list_file)
   write(format_V, '(A12, I4, A18)')   '(SE24.16e3, ', Ny, '(", ",SE24.16e3))'
-      write(700, format_V) real(VR(:,1))
+      write(700, format_V) real(VR(:,2))
   close(700)
   write(list_file, '(A)') 'eigenvec_2p.dat'       !eigen values
   open(unit=700,file=list_file)

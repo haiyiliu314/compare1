@@ -68,7 +68,7 @@
 !    Etime = A_excit*1.0d3*(sin(A_freq_para*t1))!meV non RWA, 1d3 for eV to meV 
 !    Etime = A_excit*E_B*exp(-t1*t1/(sigmat_A*sigmat_A)) * (A_freq_para*sin(A_freq_para*t1))/exp(ii*omega_1s*t1)!no E_B non RWA just sinusoidal part
 !    Etime = E_excit*exp(-t1*t1/(sigmat*sigmat)) * (1d0 + exp(-ii*2.0d0*omega_1s*t1))!no E_B   RWA
-!    Etime = A_excit*exp(-(t1-3.0d0*sigmat_A)*(t1-3.0d0*sigmat_A)/(sigmat_A*sigmat_A))*dcos(A_freq_para*t1) !unit: mV/A
+!    Etime = A_excit*exp(-(t1)*(t1)/(sigmat_A*sigmat_A))*dcos(A_freq_para*t1) !unit: mV/A
   end function Etime
 
   complex*16 function Atime(tvia)
@@ -202,10 +202,10 @@
 !      write(808, format_V) real(f_out(Nm_o+1,:))
     t1 = dt*nt_via+tstart_A
     J_THZ_t1 = 0d0
-!    J_THZ_t1 = dy*sum(y*y*(f_via(Nm_o, :)+f_via(Nm_o+2, :)))/(2.0d0*pi)
+!    J_THZ_t1 = dy1*sum(y*y*(f_via(Nm_o, :)+f_via(Nm_o+2, :)))/(2.0d0*pi)
     kE_out = dt * Etime(nt_via) * exp(ii*t1*freqgrid)  
     kA_out = dt * Atime(nt_via) * exp(ii*t1*freqgrid) 
-    pt1 = dy*sum(y*p_via(Nm_o+1, :)*dipole)/(2.0d0*pi)/a_B/a_B   !calculate macroscopic polarization unit: e/m
+    pt1 = sum(dy1*y*p_via(Nm_o+1, :)*dipole)/(2.0d0*pi)/a_B/a_B   !calculate macroscopic polarization unit: e/m
     kPfreq_out = dt * pt1 * exp(ii*freqgrid*t1)
     kJ_out = dt * J_THZ_t1 * exp(ii*freqgrid*t1)
     kP1freq_out = dt * p_proj2(1)/(2.0d0*pi) * exp(ii*freqgrid*t1)
